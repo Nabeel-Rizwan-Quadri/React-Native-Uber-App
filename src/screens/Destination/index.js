@@ -1,17 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import {
   View, Text, Button,
-  StyleSheet, Dimensions,
+  TextInput, StyleSheet, Dimensions,
   ScrollView, FlatList, TouchableOpacity
 } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { Searchbar } from 'react-native-paper';
 
-function Dashboard({ navigation }) {
 
-  const [data, setData] = useState([{name: "nabeel"}])
+function Destination({ route, navigation }) {
+  console.log(route.params)
+
+  const [data, setData] = useState({})
+  console.log('data', data)
   const [location, setLocation] = useState({});
+  const { longitude, latitude } = location
+  const [destinationLocation, setDestinationLocation] = useState();
   const [pickupLocation, setPickupLocation] = useState();
   const [userInput, setUserInput] = useState();
   const [errorMsg, setErrorMsg] = useState(null);
@@ -25,8 +30,8 @@ function Dashboard({ navigation }) {
       }
       const options = {
         accuracy: Location.Accuracy.Highest,
-        timeInterval: 500,
-        distanceInterval: 1
+        timeInterval: 1000,
+        distanceInterval: 10
       }
       Location.watchPositionAsync(options, (location) => {
         setLocation(location.coords)
@@ -36,7 +41,6 @@ function Dashboard({ navigation }) {
   }, []);
 
   const searchLocation = async () => {
-    const { longitude, latitude } = location
     console.log('searched location',latitude, longitude)
     const res = await fetch(`https://api.foursquare.com/v3/places/search?ll=${latitude}%2C${longitude}&radius=3000&query=${userInput}&limit=50`, {
       method: 'GET',
@@ -48,9 +52,6 @@ function Dashboard({ navigation }) {
     const result = await res.json()
     setData(result.results)
   }
-
-  console.log('data', data[0].name)
-  // console.log('data', data[0])
 
   //rendering of list
   const Item = ({ title }) => (
@@ -66,20 +67,23 @@ function Dashboard({ navigation }) {
   );
 
   const selectLocation = (title) => {
-    setPickupLocation(title)
+    setDestinationLocation(title)
+    setPickupLocation(route.params)
     console.log("selected location", title)
     setData({})
   }
 
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+      <Text>Destination</Text>
 
       <Searchbar
         onChangeText={setUserInput}
-        placeholder={'Search pickup location'} style={{ width: '100%', backgroundColor: 'white', fontSize: 25 }}
+        placeholder={'search pickup location'} style={{ width: '100%', backgroundColor: 'white', fontSize: 25 }}
         onIconPress={searchLocation}
-        value={pickupLocation}
+        value={destinationLocation}
       />
+      {/* <Button title='Search' onPress={searchLocation} /> */}
 
       <FlatList style={styles.FlatList}
         data={data}
@@ -90,7 +94,7 @@ function Dashboard({ navigation }) {
 
       </FlatList>
 
-      {/* <MapView
+      <MapView
         region={{
           latitude: latitude || 24.9150376,
           longitude: longitude || 67.0831213,
@@ -107,11 +111,11 @@ function Dashboard({ navigation }) {
           title={'Expertizo University'}
         />
 
-      </ MapView> */}
+      </ MapView>
 
       <Button
-        title="Select Destination"
-        onPress={() => navigation.navigate('Destination', { pickupLocation })}
+        title="Select Vehicle"
+        onPress={() => navigation.navigate('CarSelection', { destinationLocation }, { pickupLocation })}
       />
 
     </View>
@@ -129,10 +133,7 @@ const styles = StyleSheet.create({
     width: Dimensions.get('window').width,
     height: Dimensions.get('window').height * 0.6,
   },
-  ScrollView: {
-  },
   FlatList: {
-
     borderWidth: 1,
     width: '100%',
   },
@@ -141,4 +142,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default Dashboard
+export default Destination
