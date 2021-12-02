@@ -53,21 +53,6 @@ function Dashboard({ navigation }) {
     setData(result.results)
   }
 
-  // console.log('data', data[0].name)
-  // console.log('data', data[0])
-
-  //rendering of list
-  // const Item = ({ title }) => (
-  //   <View style={styles.item}>
-  //     <TouchableOpacity onPress={() => selectLocation(title)}>
-  //       <Text style={{ fontSize: 25 }}>{title}</Text>
-  //     </TouchableOpacity>
-  //   </View>
-  // );
-
-  // const renderItem = ({ item }) => (
-  //   <Item title={item.name} />
-  // );
   let selectedLongitude, selectedLatitude
   const selectLocation = (item) => {
 
@@ -84,10 +69,10 @@ function Dashboard({ navigation }) {
   if (pickupCoords) {
     selectedLongitude = pickupCoords.longitude
     selectedLatitude = pickupCoords.latitude
+    console.log(selectedLongitude, ",", selectedLatitude)
   }
-  console.log(selectedLongitude, ",", selectedLatitude)
   // console.log(selectedLongitude,",",selectedLatitude)
-  
+
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
 
@@ -98,18 +83,8 @@ function Dashboard({ navigation }) {
         value={userInput}
       />
 
-      {/* <FlatList style={styles.FlatList}
-        data={data}
-        renderItem={renderItem}
-        keyExtractor={item => item.id}>
-
-        <ScrollView style={styles.scrollView}></ScrollView>
-
-      </FlatList> */}
       <View style={styles.FlatList}>
-      <ScrollView style={styles.ScrollView}>
-        
-
+        <ScrollView style={styles.ScrollView}>
           {
             data.map((item) => {
               // console.log(item)
@@ -123,23 +98,9 @@ function Dashboard({ navigation }) {
               </TouchableOpacity>
             })
           }
-      
-      </ScrollView>
+
+        </ScrollView>
       </View>
-      {/* <List.Item
-        style={styles.ListItem}
-        title="First Item"
-        description="Item description"
-        left={props => <List.Icon {...props} icon="folder" />}
-      />
-      <List.Item
-        style={styles.ListItem}
-        title="First Item"
-        description="Item description"
-        left={props => <List.Icon {...props} icon="folder" />}
-      /> */}
-
-
 
       <MapView
         region={{
@@ -178,7 +139,7 @@ const styles = StyleSheet.create({
   },
   map: {
     width: Dimensions.get('window').width,
-    height: Dimensions.get('window').height * 0.6,
+    height: Dimensions.get('window').height * 0.5,
   },
   ScrollView: {
     width: '100%',

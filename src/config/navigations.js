@@ -3,7 +3,8 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { onAuthStateChanged, getAuth } from 'firebase/auth'
-import { logout } from './firebase';
+import Logout from '../screens/Logout';
+
 // import { useDispatch, useSelector } from "react-redux";
 
 import { updateUser } from "../store/actions/userActions";
@@ -46,22 +47,22 @@ export default function MainNavigator() {
 }
 
 function MainStack() {
-  return <Drawer.Navigator initialRouteName="Pickup" screenOptions={{ headerShown: false }}>
-    <Drawer.Screen name="Dashboard" component={DashboardStack} />
+  return <Drawer.Navigator initialRouteName="Pickup" >
+    <Drawer.Screen name="Dashboard" component={DashboardStack}  />
     <Drawer.Screen name="Trips" component={TripsStack} />
-    <Drawer.Screen name="Logout" component={logout} />
+    <Drawer.Screen name="Logout" component={Logout} />
   </Drawer.Navigator>
 }
 
 function AuthStack() {
-  return <Stack.Navigator>
+  return <Stack.Navigator screenOptions={{ headerShown: false }}>
     <Stack.Screen name="Login" component={Login} />
     <Stack.Screen name="Signup" component={Signup} />
   </Stack.Navigator>
 }
 
 function DashboardStack() {
-  return <Stack.Navigator>
+  return <Stack.Navigator screenOptions={{ headerShown: false }}>
     <Stack.Screen name="Dashboard" component={Dashboard} />
     <Stack.Screen name="Destination" component={Destination} />
     <Stack.Screen name="CarSelection" component={CarSelection} />
@@ -69,7 +70,7 @@ function DashboardStack() {
 }
 
 function TripsStack() {
-  return <Stack.Navigator>
+  return <Stack.Navigator screenOptions={{ headerShown: false }}>
     <Stack.Screen name="YourTrips" component={Trip} />
     <Stack.Screen name="Details" component={TripDetails} />
   </Stack.Navigator>
