@@ -4,7 +4,9 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { onAuthStateChanged, getAuth } from 'firebase/auth'
 import { logout } from './firebase';
+// import { useDispatch, useSelector } from "react-redux";
 
+import { updateUser } from "../store/actions/userActions";
 import {
   Login,
   Signup,
@@ -19,12 +21,16 @@ const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
 
 export default function MainNavigator() {
-  const [user, setUser] = useState()
   const auth = getAuth()
+  // const dispatch = useDispatch()
+
+  // const user = useSelector(state => state.userReducer.user)
+  const [user, setUser] = useState()
 
   useEffect(() => {
     onAuthStateChanged(auth, userData => {
       setUser(userData)
+      // dispatch(updateUser(userData))
     })
   }, [])
   console.log("user --> ", user)
@@ -40,7 +46,7 @@ export default function MainNavigator() {
 }
 
 function MainStack() {
-  return <Drawer.Navigator initialRouteName="Dashboard">
+  return <Drawer.Navigator initialRouteName="Pickup" screenOptions={{ headerShown: false }}>
     <Drawer.Screen name="Dashboard" component={DashboardStack} />
     <Drawer.Screen name="Trips" component={TripsStack} />
     <Drawer.Screen name="Logout" component={logout} />

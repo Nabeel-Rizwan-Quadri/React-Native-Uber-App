@@ -10,23 +10,32 @@
     "eject": "expo eject"
   },
   "dependencies": {
+    "@react-native-community/masked-view": "^0.1.11",
+    "@react-navigation/bottom-tabs": "^6.0.9",
     "@react-navigation/drawer": "^6.1.8",
     "@react-navigation/native": "^6.0.6",
     "@react-navigation/native-stack": "^6.2.5",
     "@react-navigation/stack": "^6.0.11",
-    "expo": "~43.0.2",
+    "expo": "^43.0.3",
     "expo-location": "~13.0.4",
     "expo-status-bar": "~1.1.0",
     "firebase": "^9.5.0",
     "react": "17.0.1",
     "react-dom": "17.0.1",
+    "react-freeze": "^1.0.0",
     "react-native": "0.64.3",
+    "react-native-gesture-handler": "~1.10.2",
     "react-native-maps": "0.28.1",
     "react-native-paper": "^4.10.1",
+    "react-native-reanimated": "~2.2.0",
     "react-native-safe-area-context": "^3.3.2",
-    "react-native-screens": "^3.9.0",
+    "react-native-screens": "^3.8.0",
     "react-native-vector-icons": "^9.0.0",
-    "react-native-web": "0.17.1"
+    "react-native-web": "0.17.1",
+    "react-redux": "^7.2.6",
+    "redux": "^4.1.2",
+    "redux-persist": "^6.0.0",
+    "redux-thunk": "^2.4.1"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9"

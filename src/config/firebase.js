@@ -2,6 +2,7 @@ import { initializeApp } from "firebase/app";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile, signOut } from "firebase/auth"
 import { getFirestore, setDoc, doc } from "firebase/firestore";
 
+
 const firebaseConfig = {
   apiKey: "AIzaSyAo7-r7tCn8UaVw4UK62Vl_OaUywEkfT3c",
   authDomain: "transport-app-3f4ad.firebaseapp.com",
