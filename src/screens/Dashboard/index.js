@@ -78,8 +78,6 @@ function Dashboard({ navigation }) {
 
     setPickupCoords(item.geocodes.main)
 
-
-
     setData([{ name: '' }])
   }
 
@@ -108,8 +106,9 @@ function Dashboard({ navigation }) {
         <ScrollView style={styles.scrollView}></ScrollView>
 
       </FlatList> */}
+      <View style={styles.FlatList}>
       <ScrollView style={styles.ScrollView}>
-        <View style={styles.FlatList}>
+        
 
           {
             data.map((item) => {
@@ -124,9 +123,9 @@ function Dashboard({ navigation }) {
               </TouchableOpacity>
             })
           }
-        </View>
+      
       </ScrollView>
-
+      </View>
       {/* <List.Item
         style={styles.ListItem}
         title="First Item"
@@ -188,7 +187,7 @@ const styles = StyleSheet.create({
   FlatList: {
     borderWidth: 1,
     width: '100%',
-    position: 'relative',
+    // position: 'absolute',
     height: Dimensions.get('window').height * 0.2
   },
   search: {
