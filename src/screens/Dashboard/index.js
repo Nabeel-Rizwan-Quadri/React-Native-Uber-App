@@ -8,18 +8,26 @@ import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { Searchbar, List } from 'react-native-paper';
 
+import { useDispatch, useSelector } from 'react-redux';
+import { updateCurrentLocation } from '../../store/actions/locationActions';
+
+
 function Dashboard({ navigation }) {
 
-  const [data, setData] = useState([{ name: '' }])
-  const [location, setLocation] = useState({});
-  const [pickupLocation, setPickupLocation] = useState();
-  const [pickupCoords, setPickupCoords] = useState();
+  const dispatch = useDispatch()
 
-  // console.log("pickup", pickupLocation)
+  const [location, setLocation] = useState({});
   const { longitude, latitude } = location
-  const [userInput, setUserInput] = useState();
   const [errorMsg, setErrorMsg] = useState(null);
 
+  const [data, setData] = useState([{ name: '' }])
+  const [pickupLocation, setPickupLocation] = useState();
+  const [pickupCoords, setPickupCoords] = useState();
+  const [userInput, setUserInput] = useState();
+
+  const currentLocation = useSelector(state => state.locationReducer)
+  console.log("dashboard currentLocation", currentLocation)
+  
   useEffect(() => {
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
@@ -34,10 +42,13 @@ function Dashboard({ navigation }) {
       }
       Location.watchPositionAsync(options, (location) => {
         setLocation(location.coords)
+        dispatch(updateCurrentLocation(location.coords))
         // console.log(location)
       })
     })();
   }, []);
+
+
 
   const searchLocation = async () => {
     const { longitude, latitude } = location
@@ -104,8 +115,8 @@ function Dashboard({ navigation }) {
 
       <MapView
         region={{
-          latitude: selectedLatitude || latitude,
-          longitude: selectedLongitude || longitude,
+          latitude: selectedLatitude || latitude || 1,
+          longitude: selectedLongitude || longitude || 1,
           latitudeDelta: 0.0022,
           longitudeDelta: 0.0021
         }}
@@ -113,8 +124,8 @@ function Dashboard({ navigation }) {
 
         <Marker
           coordinate={{
-            latitude: selectedLatitude || latitude,
-            longitude: selectedLongitude || longitude,
+            latitude: selectedLatitude || latitude || 1,
+            longitude: selectedLongitude || longitude || 1,
           }}
           title={'Expertizo University'}
         />

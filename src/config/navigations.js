@@ -17,12 +17,14 @@ import {
   TripDetails,
   Trip
 } from "../screens"
+import { useDispatch } from 'react-redux';
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
 
 export default function MainNavigator() {
   const auth = getAuth()
+  const disptach = useDispatch()
   // const dispatch = useDispatch()
 
   // const user = useSelector(state => state.userReducer.user)
@@ -34,7 +36,7 @@ export default function MainNavigator() {
       // dispatch(updateUser(userData))
     })
   }, [])
-  console.log("user --> ", user)
+  // console.log("user --> ", user)
   return (
     <NavigationContainer>
       {
@@ -48,7 +50,7 @@ export default function MainNavigator() {
 
 function MainStack() {
   return <Drawer.Navigator initialRouteName="Pickup" >
-    <Drawer.Screen name="Dashboard" component={DashboardStack}  />
+    <Drawer.Screen name="Dashboard" component={DashboardStack} />
     <Drawer.Screen name="Trips" component={TripsStack} />
     <Drawer.Screen name="Logout" component={Logout} />
   </Drawer.Navigator>

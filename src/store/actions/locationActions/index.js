@@ -1,17 +1,26 @@
-import { getAllAds } from "../../../config/firebase"
+function updateCurrentLocation(currentLocation) {
+  return {
+    type: "UPDATE_CURRENT_LOCATION",
+    data: currentLocation
+  }
+}
 
-function updateLocation(){
-  return async (dispatch) => {
-  console.log("ads actions return:")
+function updatePickupLocation(pickupLocation) {
+  return {
+    type: "UPDATE_PICKUP_LOCATION",
+    data: pickupLocation
+  }
+}
 
-        const location = await getAllAds()
-        dispatch({
-          type: 'UPDATE_LOCATION',
-          data: location
-        })
-      }
+function updateDestinationLocation(destinationLocation) {
+  return {
+    type: "UPDATE_DESTINATION_LOCATION",
+    data: destinationLocation
+  }
 }
 
 export {
-  updateLocation,
+  updateCurrentLocation,
+  updatePickupLocation,
+  updateDestinationLocation
 }
