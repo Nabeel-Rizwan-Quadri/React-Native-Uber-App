@@ -1,16 +1,16 @@
 import * as React from 'react';
 import { View, Text, Button } from 'react-native';
 
-function Trip({ navigation }) {
+function YourTrips({ navigation }) {
     return (
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-        <Text>Destination</Text>
+        <Text>Trip</Text>
         <Button
-          title="Select Vehicle"
-          onPress={() => navigation.navigate('CarSelection')}
+          title="To details"
+          onPress={() => navigation.navigate('TripDetails')}
         />
       </View>
     );
   }
 
-  export default Trip
+  export default YourTrips

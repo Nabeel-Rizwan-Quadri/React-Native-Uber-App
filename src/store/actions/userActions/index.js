@@ -5,6 +5,14 @@ function updateUser(user){
     }
 }
 
+function deleteUser(user){
+    return {
+        type: "DELETE_USER",
+        data: user
+    }
+}
+
 export {
-    updateUser
+    updateUser,
+    deleteUser
 }

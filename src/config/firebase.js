@@ -1,7 +1,9 @@
+import React, { useState, useEffect } from 'react';
 import { initializeApp } from "firebase/app";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile, signOut } from "firebase/auth"
 import { getFirestore, setDoc, doc } from "firebase/firestore";
-
+import { useDispatch, useSelector } from "react-redux";
+import { deleteUser } from '../store/actions/userActions';
 
 const firebaseConfig = {
   apiKey: "AIzaSyAo7-r7tCn8UaVw4UK62Vl_OaUywEkfT3c",
@@ -14,6 +16,7 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
+
 const auth = getAuth()
 const db = getFirestore();
 
@@ -37,7 +40,7 @@ async function loginUser({ email, password }) {
 async function logout() {
   try {
     await signOut(auth)
-    // alert("successfully logged out")
+    alert("successfully logged out")
    }
   catch (e) {
     alert(e.message)

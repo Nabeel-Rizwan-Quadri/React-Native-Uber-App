@@ -1,16 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import {
-  View, Text, Button,
+  View, Button,
   StyleSheet, Dimensions,
-  ScrollView, FlatList, TouchableOpacity
+  ScrollView, TouchableOpacity
 } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { Searchbar, List } from 'react-native-paper';
 
 import { useDispatch, useSelector } from 'react-redux';
-import { updateCurrentLocation } from '../../store/actions/locationActions';
-
+import { updateCurrentLocation, updatePickupLocation } from '../../store/actions/locationActions';
 
 function Dashboard({ navigation }) {
 
@@ -25,9 +24,9 @@ function Dashboard({ navigation }) {
   const [pickupCoords, setPickupCoords] = useState();
   const [userInput, setUserInput] = useState();
 
-  const currentLocation = useSelector(state => state.locationReducer)
-  console.log("dashboard currentLocation", currentLocation)
-  
+  const LocationInfo = useSelector(state => state.locationReducer)
+  console.log("Location info: ", LocationInfo)
+
   useEffect(() => {
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
@@ -41,14 +40,13 @@ function Dashboard({ navigation }) {
         distanceInterval: 1
       }
       Location.watchPositionAsync(options, (location) => {
+        setPickupLocation(location)
         setLocation(location.coords)
         dispatch(updateCurrentLocation(location.coords))
         // console.log(location)
       })
     })();
   }, []);
-
-
 
   const searchLocation = async () => {
     const { longitude, latitude } = location
@@ -84,17 +82,27 @@ function Dashboard({ navigation }) {
   }
   // console.log(selectedLongitude,",",selectedLatitude)
 
+  function submit() {
+    if (pickupLocation) {
+      dispatch(updatePickupLocation(pickupLocation))
+      navigation.navigate('Destination', { pickupLocation })
+    }
+    else {
+      alert("Please select a pickup location first")
+    }
+  }
+
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
 
       <Searchbar
         onChangeText={setUserInput}
-        placeholder={'Search pickup location'} style={{ width: '100%', backgroundColor: 'white', fontSize: 25 }}
+        placeholder={'Search Pickup Location'} style={{ width: '100%', backgroundColor: 'white', fontSize: 25 }}
         onIconPress={searchLocation}
         value={userInput}
       />
 
-      <View style={styles.FlatList}>
+      <View style={styles.List}>
         <ScrollView style={styles.ScrollView}>
           {
             data.map((item) => {
@@ -127,14 +135,14 @@ function Dashboard({ navigation }) {
             latitude: selectedLatitude || latitude || 1,
             longitude: selectedLongitude || longitude || 1,
           }}
-          title={'Expertizo University'}
+          title={'Your Here'}
         />
 
       </ MapView>
 
       <Button
         title="Select Destination"
-        onPress={() => navigation.navigate('Destination', { pickupLocation })}
+        onPress={submit}
       />
 
     </View>
@@ -156,7 +164,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: Dimensions.get('window').height
   },
-  FlatList: {
+  List: {
     borderWidth: 1,
     width: '100%',
     // position: 'absolute',

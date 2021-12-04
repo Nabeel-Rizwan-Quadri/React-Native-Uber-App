@@ -2,12 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
-import { onAuthStateChanged, getAuth } from 'firebase/auth'
-import Logout from '../screens/Logout';
+import { useDispatch, useSelector } from "react-redux";
 
-// import { useDispatch, useSelector } from "react-redux";
+import { onAuthStateChanged, getAuth } from 'firebase/auth'
 
 import { updateUser } from "../store/actions/userActions";
+import Logout from '../screens/Logout';
 import {
   Login,
   Signup,
@@ -15,27 +15,28 @@ import {
   Destination,
   CarSelection,
   TripDetails,
-  Trip
+  YourTrips,
+  CurrentTrip,
+  Payment
 } from "../screens"
-import { useDispatch } from 'react-redux';
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
 
 export default function MainNavigator() {
   const auth = getAuth()
-  const disptach = useDispatch()
-  // const dispatch = useDispatch()
+  const Dispatch = useDispatch()
 
-  // const user = useSelector(state => state.userReducer.user)
+  const usersData = useSelector(state => state.userReducer.user)
+  console.log("navigation", usersData)
   const [user, setUser] = useState()
 
   useEffect(() => {
     onAuthStateChanged(auth, userData => {
-      setUser(userData)
-      // dispatch(updateUser(userData))
+      Dispatch(updateUser(userData))
+      setUser(usersData)
     })
-  }, [])
+  }, [usersData])
   // console.log("user --> ", user)
   return (
     <NavigationContainer>
@@ -50,8 +51,8 @@ export default function MainNavigator() {
 
 function MainStack() {
   return <Drawer.Navigator initialRouteName="Pickup" >
-    <Drawer.Screen name="Dashboard" component={DashboardStack} />
-    <Drawer.Screen name="Trips" component={TripsStack} />
+    <Drawer.Screen name="DashboardStack" component={DashboardStack} />
+    <Drawer.Screen name="TripsStack" component={TripsStack} />
     <Drawer.Screen name="Logout" component={Logout} />
   </Drawer.Navigator>
 }
@@ -68,12 +69,14 @@ function DashboardStack() {
     <Stack.Screen name="Dashboard" component={Dashboard} />
     <Stack.Screen name="Destination" component={Destination} />
     <Stack.Screen name="CarSelection" component={CarSelection} />
+    <Stack.Screen name="CurrentTrip" component={CurrentTrip} />
+    <Stack.Screen name="Payment" component={Payment} />
   </Stack.Navigator>
 }
 
 function TripsStack() {
   return <Stack.Navigator screenOptions={{ headerShown: false }}>
-    <Stack.Screen name="YourTrips" component={Trip} />
-    <Stack.Screen name="Details" component={TripDetails} />
+    <Stack.Screen name="YourTrips" component={YourTrips} />
+    <Stack.Screen name="TripDetails" component={TripDetails} />
   </Stack.Navigator>
 }
