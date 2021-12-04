@@ -41,14 +41,19 @@ async function logout() {
   try {
     await signOut(auth)
     alert("successfully logged out")
-   }
+  }
   catch (e) {
     alert(e.message)
   }
 }
 
+async function updateUsersCurrentLocation(uid, location) {
+  await setDoc(doc(db, "usersCurrentLocation", uid), location)
+}
+
 export {
   registerUser,
   loginUser,
-  logout
+  logout,
+  updateUsersCurrentLocation
 }

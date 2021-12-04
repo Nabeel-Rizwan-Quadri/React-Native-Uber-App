@@ -30,6 +30,7 @@ export default function MainNavigator() {
   const usersData = useSelector(state => state.userReducer.user)
   console.log("navigation", usersData)
   const [user, setUser] = useState()
+  console.log("uid", user)
 
   useEffect(() => {
     onAuthStateChanged(auth, userData => {

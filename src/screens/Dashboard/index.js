@@ -10,11 +10,15 @@ import { Searchbar, List } from 'react-native-paper';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { updateCurrentLocation, updatePickupLocation } from '../../store/actions/locationActions';
+import { updateUsersCurrentLocation } from '../../config/firebase';
 
 function Dashboard({ navigation }) {
 
   const dispatch = useDispatch()
 
+  const uid = useSelector(state => state.userReducer.user.uid)
+  console.log("uid info: ", uid)
+  
   const [location, setLocation] = useState({});
   const { longitude, latitude } = location
   const [errorMsg, setErrorMsg] = useState(null);
@@ -43,6 +47,7 @@ function Dashboard({ navigation }) {
         setPickupLocation(location)
         setLocation(location.coords)
         dispatch(updateCurrentLocation(location.coords))
+        updateUsersCurrentLocation(uid, location)
         // console.log(location)
       })
     })();
