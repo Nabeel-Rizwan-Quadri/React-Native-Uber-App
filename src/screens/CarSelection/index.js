@@ -8,15 +8,15 @@ function CarSelection({ route, navigation }) {
   // const dispatch = useDispatch()
 
   const LocationInfo = useSelector(state => state.locationReducer)
-  console.log("Car Location info: ", LocationInfo)
+  // console.log("Car Location info: ", LocationInfo)
   const [pickupLocation, setPickupLocation] = useState();
-  console.log("Car pickup: ", pickupLocation)
+  // console.log("Car pickup: ", pickupLocation)
   const [destinationLocation, setDestinationLocation] = useState();
-  console.log("Car destination: ", destinationLocation)
+  // console.log("Car destination: ", destinationLocation)
 
   const [selectedCar, setSelectedCar] = useState();
   const [distance, setDistance] = useState();
-  console.log("Car distance: ", distance)
+  // console.log("Car distance: ", distance)
 
   const [tripFare, setTripFare] = useState();
 

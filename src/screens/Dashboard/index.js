@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
-  View, Button,
+  View, Button, FlatList, Text,
   StyleSheet, Dimensions,
   ScrollView, TouchableOpacity
 } from 'react-native';
@@ -17,8 +17,8 @@ function Dashboard({ navigation }) {
   const dispatch = useDispatch()
 
   const uid = useSelector(state => state.userReducer.user.uid)
-  console.log("uid info: ", uid)
-  
+  // console.log("uid info: ", uid)
+
   const [location, setLocation] = useState({});
   const { longitude, latitude } = location
   const [errorMsg, setErrorMsg] = useState(null);
@@ -29,7 +29,7 @@ function Dashboard({ navigation }) {
   const [userInput, setUserInput] = useState();
 
   const LocationInfo = useSelector(state => state.locationReducer)
-  console.log("Location info: ", LocationInfo)
+  // console.log("Location info: ", LocationInfo)
 
   useEffect(() => {
     (async () => {
@@ -55,7 +55,7 @@ function Dashboard({ navigation }) {
 
   const searchLocation = async () => {
     const { longitude, latitude } = location
-    console.log('searched location', latitude, longitude)
+    // console.log('searched location', latitude, longitude)
     const res = await fetch(`https://api.foursquare.com/v3/places/search?ll=${latitude}%2C${longitude}&radius=3000&query=${userInput}&limit=50`, {
       method: 'GET',
       headers: {
@@ -83,9 +83,8 @@ function Dashboard({ navigation }) {
   if (pickupCoords) {
     selectedLongitude = pickupCoords.longitude
     selectedLatitude = pickupCoords.latitude
-    console.log(selectedLongitude, ",", selectedLatitude)
+    // console.log(selectedLongitude, ",", selectedLatitude)
   }
-  // console.log(selectedLongitude,",",selectedLatitude)
 
   function submit() {
     if (pickupLocation) {
@@ -111,7 +110,7 @@ function Dashboard({ navigation }) {
         <ScrollView style={styles.ScrollView}>
           {
             data.map((item) => {
-              // console.log(item)
+              console.log(item)
               return <TouchableOpacity onPress={() => selectLocation(item)}>
                 <List.Item
                   style={styles.ListItem}
@@ -122,7 +121,7 @@ function Dashboard({ navigation }) {
               </TouchableOpacity>
             })
           }
-
+          
         </ScrollView>
       </View>
 
@@ -178,7 +177,6 @@ const styles = StyleSheet.create({
   search: {
     borderWidth: 1,
     width: '100%',
-    position: 'relative'
   },
   Text: {
     fontSize: 25

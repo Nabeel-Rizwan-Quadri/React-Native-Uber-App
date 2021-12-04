@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
-  View, Button,
+  View, Button, FlatList,
   StyleSheet, Dimensions,
   ScrollView, TouchableOpacity
 } from 'react-native';
@@ -18,15 +18,15 @@ function Destination({ route, navigation }) {
   // const LocationInfo = useSelector(state => state.locationReducer)
   // console.log("Location info: ", LocationInfo)
 
-  console.log("Destination params: ", route.params)
+  // console.log("Destination params: ", route.params)
 
   const [data, setData] = useState([{ name: '' }])
-  console.log('Destination data', data)
+  // console.log('Destination data', data)
 
   const [location, setLocation] = useState({});
   const { longitude, latitude } = location
   const [pickupLocation, setPickupLocation] = useState();
-  console.log("Destination pickup location: ", pickupLocation)
+  // console.log("Destination pickup location: ", pickupLocation)
   const [destinationLocation, setDestinationLocation] = useState();
   const [destinationCoords, setDestinationCoords] = useState();
   const [userInput, setUserInput] = useState();
@@ -53,7 +53,7 @@ function Destination({ route, navigation }) {
   }, []);
 
   const searchLocation = async () => {
-    console.log('Destination searched location', latitude, longitude)
+    // console.log('Destination searched location', latitude, longitude)
     const res = await fetch(`https://api.foursquare.com/v3/places/search?ll=${latitude}%2C${longitude}&radius=3000&query=${userInput}&limit=50`, {
       method: 'GET',
       headers: {
@@ -68,10 +68,10 @@ function Destination({ route, navigation }) {
   let selectedLongitude, selectedLatitude
   const selectLocation = (item) => {
 
-    console.log("Destination pickup location", pickupLocation)
+    // console.log("Destination pickup location", pickupLocation)
 
     setDestinationLocation(item)
-    console.log("Destination selected location", item.name)
+    // console.log("Destination selected location", item.name)
 
     setUserInput(item.name)
 
@@ -83,7 +83,7 @@ function Destination({ route, navigation }) {
   if (destinationCoords) {
     selectedLongitude = destinationCoords.longitude
     selectedLatitude = destinationCoords.latitude
-    console.log(selectedLongitude, ",", selectedLatitude)
+    // console.log(selectedLongitude, ",", selectedLatitude)
   }
 
   function submit() {
@@ -125,6 +125,8 @@ function Destination({ route, navigation }) {
 
         </ScrollView>
       </View>
+
+      
 
       <MapView
         region={{
