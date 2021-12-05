@@ -1,40 +1,65 @@
 import React, { useEffect, useState } from 'react';
 import {
-  View, Button, FlatList,
+  View, Button, FlatList, Text,
   StyleSheet, Dimensions,
   ScrollView, TouchableOpacity
 } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { Searchbar, List } from 'react-native-paper';
+import { updateUsersCurrentLocation, getAllDrivers } from '../../config/firebase';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { updateDestinationLocation } from '../../store/actions/requestTripActions';
+import { updatePickupLocation } from '../../store/actions/requestTripActions';
+import { updateCurrentLocation } from '../../store/actions/locationActions';
+import Api from '../../config/api';
 
-function Destination({ route, navigation }) {
+function Dashboard({ navigation }) {
   const state = useSelector(state => state.requestTripReducer)
-  console.log("Destination state: ", state)
+  console.log("Dashboard state: ", state)
+  const statelocationReducer = useSelector(state => state.locationReducer)
+
+  const uid = useSelector(state => state.userReducer.user.uid)
+
+  console.log("Dashboard location: ", statelocationReducer)
 
   const dispatch = useDispatch()
 
-  const [data, setData] = useState([{ name: '' }])
-  const [location, setLocation] = useState({});
-  const { longitude, latitude } = location
-  const [pickupLocation, setPickupLocation] = useState();
-  const [destinationLocation, setDestinationLocation] = useState({
-    coords: {},
-    name: ""
-  });
-  const [destinationCoords, setDestinationCoords] = useState();
-  const [userInput, setUserInput] = useState();
-  const [errorMsg, setErrorMsg] = useState(null);
+  // const uid = useSelector(state => state.userReducer.user.uid)
+  const stateLocation = useSelector(state => state.locationReducer.currentLocation)
+  // console.log("uid info: ", uid)
 
-  const putDestinationLocation = (key, value) => {
+  const [location, setLocation] = useState();
+  const [allDriverData, setAllDriverData] = useState([]);
+  console.log("allDriverData", allDriverData)
+
+  // console.log("Dashboardvlocation: ", location)
+
+  const [data, setData] = useState([{ name: '' }])
+  // const [search, setSearch] = useState(false)
+  const [pickupLocation, setPickupLocation] = useState({
+    coords: {},
+    name: "Marker"
+  });
+  // console.log("pickupLocation : ", pickupLocation)
+
+
+  const [pickupCoords, setPickupCoords] = useState();
+  const [userInput, setUserInput] = useState();
+
+  const LocationInfo = useSelector(state => state.locationReducer)
+
+  const putPickupLocation = (key, value) => {
     // console.log("function", "key: ", key, "value", value)
-    setDestinationLocation({ ...destinationLocation, [key]: value })
+    setPickupLocation({ ...pickupLocation, [key]: value })
+    // console.log("pickup Put Function: ", pickupLocation)
   }
 
-  useEffect(() => {
+  function callApi() {
+    Api()
+  }
+
+  useEffect(async() => {
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
@@ -43,19 +68,29 @@ function Destination({ route, navigation }) {
       }
       const options = {
         accuracy: Location.Accuracy.Highest,
-        timeInterval: 1000,
-        distanceInterval: 10
+        timeInterval: 500,
+        distanceInterval: 1
       }
       Location.watchPositionAsync(options, (location) => {
-        setLocation(location.coords)
         // console.log(location)
+        setLocation(location.coords)
+        dispatch(updateCurrentLocation(location.coords))
+
+        updateUsersCurrentLocation(uid, location)
       })
     })();
-    setPickupLocation(route.params.pickupLocation)
+
+    const driverData = await getAllDrivers()
+    setAllDriverData(driverData)
+    console.log("dashbooard data ",driverData)
+
+    setLocation(stateLocation)
   }, []);
 
   const searchLocation = async () => {
-    // console.log('Destination searched location', latitude, longitude)
+    const { longitude, latitude } = location
+    console.log(longitude, latitude)
+    console.log(userInput)
     const res = await fetch(`https://api.foursquare.com/v3/places/search?ll=${latitude}%2C${longitude}&radius=3000&query=${userInput}&limit=50`, {
       method: 'GET',
       headers: {
@@ -67,39 +102,41 @@ function Destination({ route, navigation }) {
     setData(result.results)
   }
 
-  let selectedLongitude, selectedLatitude
   const selectLocation = (item) => {
 
-    // console.log("Destination pickup location", pickupLocation)
-
-    // setDestinationLocation({...destinationLocation, coords: item.geocodes.main})
-    // setDestinationLocation({...destinationLocation, name: item.name})
-
-    putDestinationLocation("coords", item.geocodes.main)
-    // putDestinationLocation("name", item.name)
-
-    // console.log("Destination selected location", item.name)
+    putPickupLocation("coords", item.geocodes.main)
+    putPickupLocation("name", item.name)
 
     setUserInput(item.name)
 
-    setDestinationCoords(item.geocodes.main)
+    setPickupCoords(item.geocodes.main)
 
     setData([{ name: '' }])
   }
 
-  if (destinationCoords) {
-    selectedLongitude = destinationCoords.longitude
-    selectedLatitude = destinationCoords.latitude
+  let selectedLongitude, selectedLatitude
+
+  if (pickupCoords) {
+    selectedLongitude = pickupCoords.longitude
+    selectedLatitude = pickupCoords.latitude
+    // console.log(selectedLongitude, ",", selectedLatitude)
+  }
+
+  let initialLongitude, initialLatitude
+
+  if (location) {
+    initialLongitude = location.longitude
+    initialLatitude = location.latitude
     // console.log(selectedLongitude, ",", selectedLatitude)
   }
 
   function submit() {
-    if (destinationLocation) {
-      dispatch(updateDestinationLocation(destinationLocation))
-      navigation.navigate('CarSelection', { destinationLocation, pickupLocation })
+    if (pickupLocation) {
+      dispatch(updatePickupLocation(pickupLocation))
+      navigation.navigate('Destination', { pickupLocation })
     }
     else {
-      alert("Please select a destination location first")
+      alert("Please select a pickup location first")
     }
   }
 
@@ -108,11 +145,10 @@ function Destination({ route, navigation }) {
 
       <Searchbar
         onChangeText={setUserInput}
-        placeholder={'Search Destination Location'} style={{ width: '100%', backgroundColor: 'white', fontSize: 25 }}
+        placeholder={'Search Pickup Location'} style={{ width: '100%', backgroundColor: 'white', fontSize: 25 }}
         onIconPress={searchLocation}
         value={userInput}
       />
-      {/* <Button title='Search' onPress={searchLocation} /> */}
 
       <View style={styles.List}>
         <ScrollView style={styles.ScrollView}>
@@ -133,12 +169,10 @@ function Destination({ route, navigation }) {
         </ScrollView>
       </View>
 
-      
-
       <MapView
         region={{
-          latitude: selectedLatitude || latitude || 1,
-          longitude: selectedLongitude || longitude || 1,
+          latitude: selectedLatitude || initialLatitude || 24.9331712,
+          longitude: selectedLongitude || initialLongitude || 67.0892032,
           latitudeDelta: 0.0022,
           longitudeDelta: 0.0021
         }}
@@ -146,16 +180,18 @@ function Destination({ route, navigation }) {
 
         <Marker
           coordinate={{
-            latitude: selectedLatitude || latitude || 1,
-            longitude: selectedLongitude || longitude || 1,
+            latitude: selectedLatitude || initialLatitude || 24.9331712,
+            longitude: selectedLongitude || initialLongitude || 67.0892032,
           }}
           title={'Your Here'}
         />
 
       </ MapView>
 
+
+
       <Button
-        title="Select Vehicle"
+        title="Select Destination"
         onPress={submit}
       />
 
@@ -187,7 +223,6 @@ const styles = StyleSheet.create({
   search: {
     borderWidth: 1,
     width: '100%',
-    position: 'relative'
   },
   Text: {
     fontSize: 25
@@ -197,4 +232,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default Destination
+export default Dashboard

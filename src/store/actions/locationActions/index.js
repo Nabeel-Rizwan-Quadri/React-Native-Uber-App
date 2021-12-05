@@ -5,22 +5,23 @@ function updateCurrentLocation(currentLocation) {
   }
 }
 
-function updatePickupLocation(pickupLocation) {
+function updateSearchedLocation(searchedLocation) {
   return {
-    type: "UPDATE_PICKUP_LOCATION",
-    data: pickupLocation
+    type: "UPDATE_SEARCHED_LOCATION",
+    data: searchedLocation
   }
 }
 
-function updateDestinationLocation(destinationLocation) {
+function updateSearchedLocationData(searchedLocationData) {
   return {
-    type: "UPDATE_DESTINATION_LOCATION",
-    data: destinationLocation
+    type: "UPDATE_SEARCHED_LOCATION_DATA",
+    data: searchedLocationData
   }
 }
+
 
 export {
   updateCurrentLocation,
-  updatePickupLocation,
-  updateDestinationLocation
+  updateSearchedLocation,
+  updateSearchedLocationData
 }

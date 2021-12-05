@@ -3,31 +3,31 @@ import { View, Text, Button } from 'react-native';
 import { RadioButton } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
 
+import { updateSelectedCar, updateTripFare } from '../../store/actions/requestTripActions';
+
 function CarSelection({ route, navigation }) {
+  const state = useSelector(state => state.requestTripReducer)
+  console.log("Car state: ", state)
+
   // console.log("car params", route.params)
-  // const dispatch = useDispatch()
+  const dispatch = useDispatch()
 
-  const LocationInfo = useSelector(state => state.locationReducer)
-  // console.log("Car Location info: ", LocationInfo)
+  const LocationInfo = useSelector(state => state.requestTripReducer)
   const [pickupLocation, setPickupLocation] = useState();
-  // console.log("Car pickup: ", pickupLocation)
   const [destinationLocation, setDestinationLocation] = useState();
-  // console.log("Car destination: ", destinationLocation)
-
   const [selectedCar, setSelectedCar] = useState();
-  const [distance, setDistance] = useState();
-  // console.log("Car distance: ", distance)
-
   const [tripFare, setTripFare] = useState();
+  const [distance, setDistance] = useState();
+  console.log("Car distance: ", distance)
 
   useEffect(() => {
-    setPickupLocation(LocationInfo.pickupLocation.geocodes.main)
-    setDestinationLocation(LocationInfo.destinationLocation.geocodes.main)
+    setPickupLocation(LocationInfo.pickupLocation.coords)
+    setDestinationLocation(LocationInfo.destinationLocation.coords)
 
-    const laP = LocationInfo.pickupLocation.geocodes.main.latitude
-    const loP = LocationInfo.pickupLocation.geocodes.main.longitude
-    const laD = LocationInfo.destinationLocation.geocodes.main.latitude
-    const loD = LocationInfo.destinationLocation.geocodes.main.longitude
+    const laP = LocationInfo.pickupLocation.coords.latitude
+    const loP = LocationInfo.pickupLocation.coords.longitude
+    const laD = LocationInfo.destinationLocation.coords.latitude
+    const loD = LocationInfo.destinationLocation.coords.longitude
 
     setDistance(distanceCalculation(laP, laD, loP, loD))
   }, [1])
@@ -36,16 +36,16 @@ function CarSelection({ route, navigation }) {
     let price
     switch (value) {
       case "Bike":
-        price = ((distance * 10) + 100)
+        price = ((distance * 10) + 50)
         return price.toFixed(0)
       case "Riksha":
-        price = ((distance * 12) + 150)
+        price = ((distance * 13) + 100)
         return price.toFixed(0)
       case "Car":
-        price = ((distance * 15) + 200)
+        price = ((distance * 15) +150)
         return price.toFixed(0)
       case "AC_car":
-        price = ((distance * 20) + 250)
+        price = ((distance * 20) + 200)
         return price.toFixed(0)
       default:
         return 10
@@ -63,6 +63,7 @@ function CarSelection({ route, navigation }) {
       ;
     var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     var d = R * c; // Distance in km
+    console.log(d)
     return d;
   }
   function deg2rad(deg) {
@@ -74,14 +75,19 @@ function CarSelection({ route, navigation }) {
       //sending data to firebase before data here
 
       //Redux update with current trip data
+      dispatch(updateSelectedCar(selectedCar))
 
-      setTripFare(fareCalculation(selectedCar))
-
+      dispatch(updateTripFare(tripFare))
       navigation.navigate('Payment', { pickupLocation }, { destinationLocation }, { selectedCar }, { tripFare })
     }
     else {
       alert("Please select a ride first")
     }
+  }
+
+  function radioSelect(value) {
+    setSelectedCar(value)
+    setTripFare(fareCalculation(value))
   }
 
   return (
@@ -92,7 +98,7 @@ function CarSelection({ route, navigation }) {
         <RadioButton
           value="Bike"
           status={selectedCar === 'Bike' ? 'checked' : 'unchecked'}
-          onPress={() => setSelectedCar('Bike')}
+          onPress={() => radioSelect('Bike')}
         />
         <Text style={{ fontSize: 20 }}>Bike Rs. {fareCalculation('Bike')}{"\n"}</Text>
       </Text>
@@ -101,7 +107,7 @@ function CarSelection({ route, navigation }) {
         <RadioButton
           value="Riksha"
           status={selectedCar === 'Riksha' ? 'checked' : 'unchecked'}
-          onPress={() => setSelectedCar('Riksha')}
+          onPress={() => radioSelect('Riksha')}
         />
         <Text style={{ fontSize: 20 }}>Riksha Rs. {fareCalculation("Riksha")}{"\n"}</Text>
       </Text>
@@ -109,7 +115,7 @@ function CarSelection({ route, navigation }) {
       <Text>
         <RadioButton
           status={selectedCar === 'Car' ? 'checked' : 'unchecked'}
-          onPress={() => setSelectedCar('Car')}
+          onPress={() => radioSelect('Car')}
         />
         <Text style={{ fontSize: 20 }}>Car Rs. {fareCalculation("Car")}{"\n"}</Text>
       </Text>
@@ -117,7 +123,7 @@ function CarSelection({ route, navigation }) {
       <Text>
         <RadioButton
           status={selectedCar === 'AC_car' ? 'checked' : 'unchecked'}
-          onPress={() => setSelectedCar('AC_car')}
+          onPress={() => radioSelect('AC_car')}
         />
         <Text style={{ fontSize: 20 }}>AC Car Rs. {fareCalculation("AC_car")}{"\n"}</Text>
       </Text>

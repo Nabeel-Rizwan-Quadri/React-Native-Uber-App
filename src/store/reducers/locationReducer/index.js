@@ -3,11 +3,11 @@ function locationReducer(state = {}, action) {
         case 'UPDATE_CURRENT_LOCATION': {
             return { ...state, currentLocation: action.data }
         }
-        case 'UPDATE_PICKUP_LOCATION': {
-            return { ...state, pickupLocation: action.data }
+        case 'UPDATE_SEARCHED_LOCATION': {
+            return { ...state, searchedLocation: action.data }
         }
-        case 'UPDATE_DESTINATION_LOCATION': {
-            return { ...state, destinationLocation: action.data }
+        case 'UPDATE_SEARCHED_LOCATION_DATA': {
+            return { ...state, searchedLocationData: action.data }
         }
         default: {
             return state

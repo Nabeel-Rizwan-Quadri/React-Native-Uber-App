@@ -3,17 +3,19 @@ import { View, Text, Button } from 'react-native';
 import { RadioButton } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
 
-function Payment({ route, navigation }) {
-  
-  console.log(route.params)
+import { updatePaymentMethod } from '../../store/actions/requestTripActions';
 
+function Payment({ route, navigation }) {
   const state = useSelector(state => state)
-  console.log(state)
+  console.log("Payment state",state.requestTripReducer)
+
+  const dispatch = useDispatch()
 
   const [paymentMethod, setPaymentMethod] = useState();
 
   const submit = () => {
     if (paymentMethod) {
+      dispatch(updatePaymentMethod(paymentMethod))
       navigation.navigate('CurrentTrip')
     }
     else {

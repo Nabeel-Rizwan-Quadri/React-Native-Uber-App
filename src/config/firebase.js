@@ -1,9 +1,7 @@
-import React, { useState, useEffect } from 'react';
 import { initializeApp } from "firebase/app";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile, signOut } from "firebase/auth"
-import { getFirestore, setDoc, doc } from "firebase/firestore";
-import { useDispatch, useSelector } from "react-redux";
-import { deleteUser } from '../store/actions/userActions';
+import { getFirestore, setDoc, doc, updateDoc, collection, query, getDocs } from "firebase/firestore";
+
 
 const firebaseConfig = {
   apiKey: "AIzaSyAo7-r7tCn8UaVw4UK62Vl_OaUywEkfT3c",
@@ -48,12 +46,34 @@ async function logout() {
 }
 
 async function updateUsersCurrentLocation(uid, location) {
-  await setDoc(doc(db, "usersCurrentLocation", uid), location)
+  const locationRef = doc(db, 'users', uid)
+  await updateDoc(locationRef, { location: location.coords })
+}
+
+async function getAllDrivers() {
+
+  let dataCopyArray = []
+
+  const q = query(collection(db, "drivers"))
+  const querySnapshot = await getDocs(q);
+
+  querySnapshot.forEach((doc) => {
+    let dataCopy = doc.data()
+    dataCopyArray.push({ ...dataCopy, id: doc.id })
+  });
+
+  return dataCopyArray
+}
+
+function requestTrip() {
+
 }
 
 export {
   registerUser,
   loginUser,
   logout,
-  updateUsersCurrentLocation
+  updateUsersCurrentLocation,
+  requestTrip,
+  getAllDrivers
 }
