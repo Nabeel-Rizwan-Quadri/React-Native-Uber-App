@@ -16,7 +16,7 @@ function CurrentTrip({ route, navigation }) {
   console.log("CurrentTrip driverUserDistance: ", driverUserDistance)
 
   const [sortedDriverUserDistance, setSortedDriverUserDistance] = useState([]);
-  console.log("CurrentTrip driverUserDistance: ", sortedDriverUserDistance)
+  console.log("CurrentTrip sortedDriverUserDistance: ", sortedDriverUserDistance)
 
   const [allDriverData, setAllDriverData] = useState([]);
   // console.log("CurrentTrip allDriverData", allDriverData)
@@ -43,34 +43,48 @@ function CurrentTrip({ route, navigation }) {
 
       let result = distanceCalculation(laP, laD, loP, loD)
 
-      console.log(result)
+      console.log("map", driverData.fullName, result)
 
       copyDataArray.push({ ...driverData, distanceFromUser: result })
     })
     setDriverUserDistance(copyDataArray)
+    setSortedDriverUserDistance(copyDataArray)
 
-  }, []);
+  }, [1]);
 
-  function distanceCalculation() {
-    // console.log("CurrentTrip distanceCalculation", allDriverData)
-    let copyDataArray = []
-    allDriverData.map((driver) => {
+  if (sortedDriverUserDistance) {
+    sortedDriverUserDistance.sort(function (a, b) {
+      var keyA = a.distanceFromUser,
+        keyB = b.distanceFromUser;
+      // Compare the 2 dates
+      if (keyA < keyB) return -1;
+      if (keyA > keyB) return 1;
+      return 0;
+    });
+    // driverUserDistance.sort((a, b) => a.distanceFromUser.localeCompare(b.distanceFromUser));
+    // setSortedDriverUserDistance( driverUserDistance.sortBy(driverUserDistance, 'distance'))
 
-      let driverData = driver
-
-      let laP = pickupLocation.latitude
-      let loP = pickupLocation.longitude
-
-      let laD = driver.location.latitude
-      let loD = driver.location.longitude
-
-      let result = distanceCalculation(laP, laD, loP, loD)
-
-      copyDataArray.push({ ...driverData, distanceFromUser: result })
-    })
-    setDriverUserDistance(copyDataArray)
-    sortingDriverData()
   }
+  // function distanceCalculation() {
+  // console.log("CurrentTrip distanceCalculation", allDriverData)
+  //   let copyDataArray = []
+  //   allDriverData.map((driver) => {
+
+  //     let driverData = driver
+
+  //     let laP = pickupLocation.latitude
+  //     let loP = pickupLocation.longitude
+
+  //     let laD = driver.location.latitude
+  //     let loD = driver.location.longitude
+
+  //     let result = distanceCalculation(laP, laD, loP, loD)
+
+  //     copyDataArray.push({ ...driverData, distanceFromUser: result })
+  //   })
+  //   setDriverUserDistance(copyDataArray)
+  //   sortingDriverData()
+  // }
 
   function sortingDriverData() {
     console.log("CurrentTrip sortingDriverData", driverUserDistance)
@@ -109,7 +123,6 @@ function CurrentTrip({ route, navigation }) {
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
       <Text>Searching for drivers near you</Text>
-      <Text>Distance from pickup{driverUserDistance[0]}</Text>
     </View>
   );
 }
