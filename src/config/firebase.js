@@ -51,22 +51,21 @@ async function updateUsersCurrentLocation(uid, location) {
 }
 
 async function getAllDrivers() {
-
   let dataCopyArray = []
-
   const q = query(collection(db, "drivers"))
-  const querySnapshot = await getDocs(q);
 
+  const querySnapshot = await getDocs(q);
   querySnapshot.forEach((doc) => {
     let dataCopy = doc.data()
     dataCopyArray.push({ ...dataCopy, id: doc.id })
   });
-
+  
   return dataCopyArray
 }
 
-function requestTrip() {
-
+async function requestTrip({}, userData) {
+  const requestRef = doc(db, 'requestedTrip', userData.uid)
+  await setDoc( requestRef, {driverData}, {userData})
 }
 
 export {

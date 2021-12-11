@@ -5,8 +5,11 @@ import { updateDrivers, updateDriverUserDistance } from '../../store/actions/use
 import { getAllDrivers, requestTrip } from '../../config/firebase';
 
 function CurrentTrip({ route, navigation }) {
+  const dispatch = useDispatch()
 
-  const user = useSelector(state => state.userReducer.user)
+  const userData = useSelector(state => state.userReducer.user)
+  const driverData = useSelector(state => state.userReducer.driverUserDistance)
+  console.log("CurrentTrip driverData redux: ", driverData)
 
   const LocationInfo = useSelector(state => state.requestTripReducer)
   const [pickupLocation, setPickupLocation] = useState();
@@ -32,28 +35,21 @@ function CurrentTrip({ route, navigation }) {
     let copyDataArray = []
 
     allDriverData.map((driver) => {
-
       let driverData = driver
-
       let laP = pickupLocation.latitude
       let loP = pickupLocation.longitude
-
       let laD = driver.location.latitude
       let loD = driver.location.longitude
-
       let result = distanceCalculation(laP, laD, loP, loD)
-
       console.log("map", driverData.fullName, result)
-
       copyDataArray.push({ ...driverData, distanceFromUser: result })
     })
     setDriverUserDistance(copyDataArray)
-    setSortedDriverUserDistance(copyDataArray)
 
   }, [1]);
 
-  if (sortedDriverUserDistance) {
-    sortedDriverUserDistance.sort(function (a, b) {
+  if (driverUserDistance) {
+    driverUserDistance.sort(function (a, b) {
       var keyA = a.distanceFromUser,
         keyB = b.distanceFromUser;
       // Compare the 2 dates
@@ -61,10 +57,17 @@ function CurrentTrip({ route, navigation }) {
       if (keyA > keyB) return 1;
       return 0;
     });
+    dispatch(updateDriverUserDistance(driverUserDistance))
+    requstATrip()
     // driverUserDistance.sort((a, b) => a.distanceFromUser.localeCompare(b.distanceFromUser));
     // setSortedDriverUserDistance( driverUserDistance.sortBy(driverUserDistance, 'distance'))
-
   }
+
+  function requstATrip() {
+    console.log("CurrentTrip requstATrip", driverUserDistance, user)
+    requestTrip(driverData, userData)
+  }
+
   // function distanceCalculation() {
   // console.log("CurrentTrip distanceCalculation", allDriverData)
   //   let copyDataArray = []
@@ -86,22 +89,17 @@ function CurrentTrip({ route, navigation }) {
   //   sortingDriverData()
   // }
 
-  function sortingDriverData() {
-    console.log("CurrentTrip sortingDriverData", driverUserDistance)
+  // function sortingDriverData() {
+  //   console.log("CurrentTrip sortingDriverData", driverUserDistance)
 
-    //sorting by distanceFromUser
-    //any sorting method
+  //   //sorting by distanceFromUser
+  //   //any sorting method
 
-    setSortedDriverUserDistance()
-    dispatch(updateDriverUserDistance(sortedDriverUserDistance))
+  //   setSortedDriverUserDistance()
+  //   dispatch(updateDriverUserDistance(sortedDriverUserDistance))
 
-    requstATrip()
-  }
-
-  function requstATrip() {
-    console.log("CurrentTrip requstATrip", sortedDriverUserDistance, user)
-    requestTrip(sortedDriverUserDistance, user)
-  }
+  //   requstATrip()
+  // }
 
   function distanceCalculation(lat1, lat2, lon1, lon2) {
     var R = 6371; // Radius of the earth in km

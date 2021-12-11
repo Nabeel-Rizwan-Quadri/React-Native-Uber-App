@@ -77,7 +77,7 @@ function Dashboard({ navigation }) {
   const searchLocation = async () => {
     const { longitude, latitude } = location
     console.log("searchLocation ", longitude, latitude, userInput)
-    const res = await fetch(`https://api.foursquare.com/v3/places/search?ll=${latitude}%2C${longitude}&radius=5000&query=${userInput}&limit=50`, {
+    const res = await fetch(`https://api.foursquare.com/v3/places/search?ll=${latitude}%2C${longitude}&radius=3000&query=${userInput}&limit=50`, {
       method: 'GET',
       headers: {
         Accept: 'application/json',
@@ -85,6 +85,7 @@ function Dashboard({ navigation }) {
       }
     })
     const result = await res.json()
+    console.log(result)
     setData(result.results)
   }
 
