@@ -60,7 +60,7 @@ function Destination({ route, navigation }) {
       method: 'GET',
       headers: {
         Accept: 'application/json',
-        'Authorization': 'fsq3rkNdt9RLOsMqSu9PAoTXGkGDSi7DSL8ge3qx5YOGoRI='
+        'Authorization': 'fsq3a6C6+Y939PkrC6l7ymB4t8ByFN2CB5+dknYo2IzwXYs='
       }
     })
     const result = await res.json()
