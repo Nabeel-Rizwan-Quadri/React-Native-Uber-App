@@ -3,7 +3,6 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { useDispatch, useSelector } from "react-redux";
-
 import { onAuthStateChanged, getAuth } from 'firebase/auth'
 
 import { updateUser } from "../store/actions/userActions";
@@ -12,12 +11,10 @@ import {
   Login,
   Signup,
   Dashboard,
-  Destination,
-  CarSelection,
   TripDetails,
   YourTrips,
   CurrentTrip,
-  Payment
+  CurrentTripEnded
 } from "../screens"
 
 const Stack = createNativeStackNavigator();
@@ -52,7 +49,7 @@ export default function MainNavigator() {
 
 function MainStack() {
   return <Drawer.Navigator initialRouteName="Pickup" >
-    <Drawer.Screen name="DashboardStack" component={DashboardStack} />
+    <Drawer.Screen name="Driver" component={DashboardStack} />
     <Drawer.Screen name="TripsStack" component={TripsStack} />
     <Drawer.Screen name="Logout" component={Logout} />
   </Drawer.Navigator>
@@ -68,10 +65,8 @@ function AuthStack() {
 function DashboardStack() {
   return <Stack.Navigator screenOptions={{ headerShown: false }}>
     <Stack.Screen name="Dashboard" component={Dashboard} />
-    <Stack.Screen name="Destination" component={Destination} />
-    <Stack.Screen name="CarSelection" component={CarSelection} />
     <Stack.Screen name="CurrentTrip" component={CurrentTrip} />
-    <Stack.Screen name="Payment" component={Payment} />
+    <Stack.Screen name="CurrentTripEnded" component={CurrentTripEnded} />
   </Stack.Navigator>
 }
 

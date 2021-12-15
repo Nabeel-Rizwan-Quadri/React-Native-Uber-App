@@ -5,23 +5,29 @@ function updateCurrentLocation(currentLocation) {
   }
 }
 
-function updateSearchedLocation(searchedLocation) {
+function updatePickupLocation(pickupLocation) {
   return {
-    type: "UPDATE_SEARCHED_LOCATION",
-    data: searchedLocation
+    type: "UPDATE_PICKUP_LOCATION",
+    data: pickupLocation
   }
 }
 
-function updateSearchedLocationData(searchedLocationData) {
+function updateDestinationLocation(destinationLocation) {
   return {
-    type: "UPDATE_SEARCHED_LOCATION_DATA",
-    data: searchedLocationData
+    type: "UPDATE_DESTINATION_LOCATION",
+    data: destinationLocation
   }
 }
 
+// function updateDestinationLocation(destinationLocation) {
+//   return {
+//     type: "UPDATE_DESTINATION_LOCATION",
+//     data: destinationLocation
+//   }
+// }
 
 export {
   updateCurrentLocation,
-  updateSearchedLocation,
-  updateSearchedLocationData
+  updatePickupLocation,
+  updateDestinationLocation
 }

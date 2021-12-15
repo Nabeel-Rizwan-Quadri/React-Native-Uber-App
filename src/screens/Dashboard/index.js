@@ -6,48 +6,22 @@ import {
 } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
-import { Searchbar, List } from 'react-native-paper';
-import { updateUsersCurrentLocation, getAllDrivers } from '../../config/firebase';
+
+import { updateUsersCurrentLocation,getAllRequestedTrips } from '../../config/firebase';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { updatePickupLocation } from '../../store/actions/requestTripActions';
 import { updateCurrentLocation } from '../../store/actions/locationActions';
-import Api from '../../config/api';
-import { updateDrivers } from '../../store/actions/userActions';
 
 function Dashboard({ navigation }) {
-  const state = useSelector(state => state.locationReducer)
-  console.log("Dashboard location state: ", state)
 
   const dispatch = useDispatch()
 
-  const uid = useSelector(state => state.userReducer.user.uid)
-
-  // const statelocationReducer = useSelector(state => state.locationReducer)
-  // const drivers = useSelector(state => state.userReducer.drivers)
-
-  const stateLocation = useSelector(state => state.locationReducer.currentLocation)
+  const driverData = useSelector(state => state.userReducer.user)
+  console.log("Dashboard uid: ", driverData.uid)
   const [location, setLocation] = useState();
-  const [allDriverData, setAllDriverData] = useState([]);
-  const [data, setData] = useState([{ name: '' }])
-  const [pickupLocation, setPickupLocation] = useState({
-    coords: {},
-    name: "Marker"
-  });
-  const [pickupCoords, setPickupCoords] = useState();
-  const [userInput, setUserInput] = useState();
+  const [requestedTrips, setRequestedTrips] = useState();
 
-  const putPickupLocation = (key, value) => {
-    // console.log("function", "key: ", key, "value", value)
-    setPickupLocation({ ...pickupLocation, [key]: value })
-    // console.log("pickup Put Function: ", pickupLocation)
-  }
-
-  // function callApi() {
-  //   Api()
-  // }
-
-  useEffect(async () => {
+  useEffect(() => {
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
@@ -60,54 +34,18 @@ function Dashboard({ navigation }) {
         distanceInterval: 1
       }
       Location.watchPositionAsync(options, (location) => {
+        console.log(location)
         setLocation(location.coords)
         dispatch(updateCurrentLocation(location.coords))
-
-        updateUsersCurrentLocation(uid, location)
+        updateUsersCurrentLocation(driverData.uid, location)
       })
-      setLocation(stateLocation)
-
     })();
-
-    const driverData = await getAllDrivers()
-    dispatch(updateDrivers(driverData))
-    setAllDriverData(driverData)
+    const myRequestedTrips = getAllRequestedTrips(driverData)
+    setRequestedTrips(myRequestedTrips)
   }, []);
 
-  const searchLocation = async () => {
-    const { longitude, latitude } = location
-    console.log("searchLocation ", longitude, latitude, userInput)
-    const res = await fetch(`https://api.foursquare.com/v3/places/search?ll=${latitude}%2C${longitude}&radius=3000&query=${userInput}&limit=50`, {
-      method: 'GET',
-      headers: {
-        Accept: 'application/json',
-        'Authorization': 'fsq3a6C6+Y939PkrC6l7ymB4t8ByFN2CB5+dknYo2IzwXYs='
-      }
-    })
-    const result = await res.json()
-    console.log(result)
-    setData(result.results)
-  }
-
-  const selectLocation = (item) => {
-
-    console.log("selectLocation ", item)
-
-    putPickupLocation("coords", item.geocodes.main)
-    // putPickupLocation("name", item.name)
-
-    setUserInput(item.name)
-
-    setPickupCoords(item.geocodes.main)
-
-    setData([{ name: '' }])
-  }
-
-  let selectedLongitude, selectedLatitude
-
-  if (pickupCoords) {
-    selectedLongitude = pickupCoords.longitude
-    selectedLatitude = pickupCoords.latitude
+  if(requestedTrips){
+    alert("you have been requested a trip would you like to accet it or reject it")
   }
 
   let initialLongitude, initialLatitude
@@ -115,77 +53,30 @@ function Dashboard({ navigation }) {
   if (location) {
     initialLongitude = location.longitude
     initialLatitude = location.latitude
-  }
-
-  function submit() {
-    if (pickupLocation) {
-      dispatch(updatePickupLocation(pickupLocation))
-      navigation.navigate('Destination', { pickupLocation })
-    }
-    else {
-      alert("Please select a pickup location first")
-    }
+    // console.log(selectedLongitude, ",", selectedLatitude)
   }
 
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
 
-      <Searchbar
-        onChangeText={setUserInput}
-        placeholder={'Search Pickup Location'} style={{ width: '100%', backgroundColor: 'white', fontSize: 25 }}
-        onIconPress={searchLocation}
-        value={userInput}
-      />
-
-      <View style={styles.List}>
-        <ScrollView style={styles.ScrollView}>
-          {
-            data.map((item) => {
-              return <TouchableOpacity onPress={() => selectLocation(item)}>
-                <List.Item
-                  style={styles.ListItem}
-                  title={item.name}
-                  description={item.description}
-                  left={props => <List.Icon {...props} icon="" />}
-                />
-              </TouchableOpacity>
-            })
-          }
-        </ScrollView>
-      </View>
-
-      <MapView
+      {/* <MapView
         region={{
-          latitude: selectedLatitude || initialLatitude || 37.4219881,
-          longitude: selectedLongitude || initialLongitude || -122.0839954,
+          latitude: initialLatitude || 24.9331712,
+          longitude: initialLongitude || 67.0892032,
           latitudeDelta: 0.0022,
           longitudeDelta: 0.0021
         }}
         style={styles.map}>
+
         <Marker
           coordinate={{
-            latitude: selectedLatitude || initialLatitude || 37.4219899,
-            longitude: selectedLongitude || initialLongitude || -122.0839966,
+            latitude: initialLatitude || 24.9331712,
+            longitude: initialLongitude || 67.0892032,
           }}
           title={'Your Here'}
         />
-        {
-          allDriverData.map((driver) => {
-            return <Marker
-              coordinate={{
-                latitude: driver.location.latitude || 37.4219999,
-                longitude: driver.location.longitude || -122.0839999
-              }}
-              title={driver.fullName}
-            />
-          })
-        }
-      </ MapView>
 
-      <Button
-        title="Select Destination"
-        onPress={submit}
-      />
+      </ MapView> */}
 
     </View>
   );
@@ -200,28 +91,8 @@ const styles = StyleSheet.create({
   },
   map: {
     width: Dimensions.get('window').width,
-    height: Dimensions.get('window').height * 0.5,
+    height: Dimensions.get('window').height * 0.8,
   },
-  ScrollView: {
-    width: '100%',
-    height: Dimensions.get('window').height
-  },
-  List: {
-    borderWidth: 1,
-    width: '100%',
-    // position: 'absolute',
-    height: Dimensions.get('window').height * 0.2
-  },
-  search: {
-    borderWidth: 1,
-    width: '100%',
-  },
-  Text: {
-    fontSize: 25
-  },
-  ListItem: {
-    width: '100%'
-  }
 });
 
 export default Dashboard

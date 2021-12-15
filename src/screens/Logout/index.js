@@ -1,15 +1,12 @@
 import React from 'react';
 import { View } from 'react-native';
 import { Button } from 'react-native-paper';
-
-// import { useDispatch } from 'react-redux';
 import { logout } from '../../config/firebase';
 
-function submit() {
-  logout()
-}
-
 function Logout() {
+  function submit() {
+    logout()
+  }
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
       <Button

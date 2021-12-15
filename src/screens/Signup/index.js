@@ -27,7 +27,7 @@ function Signup({ navigation }) {
 
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Text style={{fontSize: 25}}>Signup Now!</Text>
+      <Text style={{fontSize: 25}}>Signup As A Driver Now!</Text>
 
       <TextInput style={{width: '100%'}} onChangeText={(text) => onChangeValues('userName', text)} placeholder='Username' ></TextInput>
       <TextInput style={{width: '100%'}} onChangeText={(text) => onChangeValues('fullName', text)} placeholder='Full Name' ></TextInput>

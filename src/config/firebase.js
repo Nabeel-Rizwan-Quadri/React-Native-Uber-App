@@ -1,7 +1,9 @@
+import React, { useState, useEffect } from 'react';
 import { initializeApp } from "firebase/app";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile, signOut } from "firebase/auth"
-import { getFirestore, setDoc, doc, updateDoc, collection, query, getDocs } from "firebase/firestore";
-
+import { addDoc, collection, setDoc, doc, getFirestore ,getDocs, query, where } from "firebase/firestore"
+import { useDispatch, useSelector } from "react-redux";
+import { deleteUser } from '../store/actions/userActions';
 
 const firebaseConfig = {
   apiKey: "AIzaSyAo7-r7tCn8UaVw4UK62Vl_OaUywEkfT3c",
@@ -26,7 +28,7 @@ async function registerUser(authData, password) {
     displayName: fullName,
   })
 
-  await setDoc(doc(db, "users", uid), {
+  await setDoc(doc(db, "drivers", uid), {
     fullName, email, age, uid, phoneNumber
   })
 }
@@ -46,26 +48,40 @@ async function logout() {
 }
 
 async function updateUsersCurrentLocation(uid, location) {
-  const locationRef = doc(db, 'users', uid)
+  console.log("firebase callled")
+  const locationRef = doc(db, 'drivers', uid)
   await updateDoc(locationRef, { location: location.coords })
 }
 
-async function getAllDrivers() {
+async function getAllRequestedTrips(driverData) {
   let dataCopyArray = []
-  const q = query(collection(db, "drivers"))
 
-  const querySnapshot = await getDocs(q);
-  querySnapshot.forEach((doc) => {
-    let dataCopy = doc.data()
-    dataCopyArray.push({ ...dataCopy, id: doc.id })
+  // const q = query(collection(db, "requestedTrip"))
+
+  // const querySnapshot = await getDocs(q, where("driver.id", "==", driverData.id));
+  // querySnapshot.forEach((doc) => {
+  //   let dataCopy = doc.data()
+  //   dataCopyArray.push({ ...dataCopy, id: doc.id })
+  // });
+
+  const q = query(collection(db, "requestedTrip"), where("driver.id", "==", driverData.id));
+
+  const result = onSnapshot(q, (querySnapshot) => {
+    const requestedTrip = [];
+
+    querySnapshot.forEach((doc) => {
+      requestedTrip.push(doc.data());
+      dataCopyArray.push(doc.data())
+    });
+
+    console.log("requestedTrips are: ", requestedTrip);
+    return requestedTrip
   });
-  
-  return dataCopyArray
-}
 
-async function requestTrip({}, userData) {
-  const requestRef = doc(db, 'requestedTrip', userData.uid)
-  await setDoc( requestRef, {driverData}, {userData})
+  dataCopyArray.push(result)
+  console.log("dataCopyArray: ", dataCopyArray);
+
+  return dataCopyArray
 }
 
 export {
@@ -73,6 +89,5 @@ export {
   loginUser,
   logout,
   updateUsersCurrentLocation,
-  requestTrip,
-  getAllDrivers
+  getAllRequestedTrips
 }

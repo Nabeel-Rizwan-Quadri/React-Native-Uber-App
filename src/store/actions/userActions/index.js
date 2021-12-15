@@ -1,5 +1,3 @@
-import { getAllDrivers } from "../../../config/firebase"
-
 function updateUser(user){
     return {
         type: "UPDATE_USER",
@@ -7,19 +5,7 @@ function updateUser(user){
     }
 }
 
-function updateDrivers(driversData){
-    return {
-        type: "UPDATE_DRIVERS",
-        data: driversData
-    }
-}
 
-function updateDriverUserDistance(sortedDriverUserDistance){
-    return {
-        type: "UPDATE_DRIVER_USER_DISTANCE",
-        data: sortedDriverUserDistance
-    }
-}
 
 function deleteUser(user){
     return {
@@ -30,7 +16,5 @@ function deleteUser(user){
 
 export {
     updateUser,
-    deleteUser,
-    updateDrivers,
-    updateDriverUserDistance
+    deleteUser
 }

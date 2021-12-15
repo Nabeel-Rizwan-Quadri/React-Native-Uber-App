@@ -1,128 +1,103 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Button } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
-import { updateDrivers, updateDriverUserDistance } from '../../store/actions/userActions';
-import { getAllDrivers, requestTrip } from '../../config/firebase';
+import {
+  View, Button, FlatList, Text,
+  StyleSheet, Dimensions,
+  ScrollView, TouchableOpacity
+} from 'react-native';
+import MapView, { Marker } from 'react-native-maps';
+import * as Location from 'expo-location';
 
-function CurrentTrip({ route, navigation }) {
+import { updateUsersCurrentLocation } from '../../config/firebase';
+import { useDispatch, useSelector } from 'react-redux';
+
+import { updateCurrentLocation } from '../../store/actions/locationActions';
+
+
+function CurrentTrip({ navigation }) {
+
   const dispatch = useDispatch()
 
-  const userData = useSelector(state => state.userReducer.user)
-  const driverData = useSelector(state => state.userReducer.driverUserDistance)
-  console.log("CurrentTrip driverData redux: ", driverData)
+  const uid = useSelector(state => state.userReducer.user.uid)
+  console.log("Dashboard uid: ", uid)
+  const [location, setLocation] = useState();
 
-  const LocationInfo = useSelector(state => state.requestTripReducer)
-  const [pickupLocation, setPickupLocation] = useState();
-  console.log("CurrentTrip pickupLocation: ", pickupLocation)
+  useEffect(() => {
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        setErrorMsg('Permission to access location was denied');
+        return;
+      }
+      const options = {
+        accuracy: Location.Accuracy.Highest,
+        timeInterval: 500,
+        distanceInterval: 1
+      }
+      Location.watchPositionAsync(options, (location) => {
+        // console.log(location)
+        setLocation(location.coords)
+        dispatch(updateCurrentLocation(location.coords))
 
-  const [driverUserDistance, setDriverUserDistance] = useState([]);
-  console.log("CurrentTrip driverUserDistance: ", driverUserDistance)
+        updateUsersCurrentLocation(uid, location)
+      })
 
-  const [sortedDriverUserDistance, setSortedDriverUserDistance] = useState([]);
-  console.log("CurrentTrip sortedDriverUserDistance: ", sortedDriverUserDistance)
+    })();
+  }, []);
 
-  const [allDriverData, setAllDriverData] = useState([]);
-  // console.log("CurrentTrip allDriverData", allDriverData)
 
-  useEffect(async () => {
-    setPickupLocation(LocationInfo.pickupLocation.coords)
 
-    const driverData = await getAllDrivers()
-    // dispatch(updateDrivers(driverData))
-    setAllDriverData(driverData)
-    console.log("CurrentTrip data ", driverData)
+  let initialLongitude, initialLatitude
 
-    let copyDataArray = []
-
-    allDriverData.map((driver) => {
-      let driverData = driver
-      let laP = pickupLocation.latitude
-      let loP = pickupLocation.longitude
-      let laD = driver.location.latitude
-      let loD = driver.location.longitude
-      let result = distanceCalculation(laP, laD, loP, loD)
-      console.log("map", driverData.fullName, result)
-      copyDataArray.push({ ...driverData, distanceFromUser: result })
-    })
-    setDriverUserDistance(copyDataArray)
-
-  }, [1]);
-
-  if (driverUserDistance) {
-    driverUserDistance.sort(function (a, b) {
-      var keyA = a.distanceFromUser,
-        keyB = b.distanceFromUser;
-      // Compare the 2 dates
-      if (keyA < keyB) return -1;
-      if (keyA > keyB) return 1;
-      return 0;
-    });
-    dispatch(updateDriverUserDistance(driverUserDistance))
-    requstATrip()
-    // driverUserDistance.sort((a, b) => a.distanceFromUser.localeCompare(b.distanceFromUser));
-    // setSortedDriverUserDistance( driverUserDistance.sortBy(driverUserDistance, 'distance'))
-  }
-
-  function requstATrip() {
-    console.log("CurrentTrip requstATrip", driverUserDistance, user)
-    requestTrip(driverData, userData)
-  }
-
-  // function distanceCalculation() {
-  // console.log("CurrentTrip distanceCalculation", allDriverData)
-  //   let copyDataArray = []
-  //   allDriverData.map((driver) => {
-
-  //     let driverData = driver
-
-  //     let laP = pickupLocation.latitude
-  //     let loP = pickupLocation.longitude
-
-  //     let laD = driver.location.latitude
-  //     let loD = driver.location.longitude
-
-  //     let result = distanceCalculation(laP, laD, loP, loD)
-
-  //     copyDataArray.push({ ...driverData, distanceFromUser: result })
-  //   })
-  //   setDriverUserDistance(copyDataArray)
-  //   sortingDriverData()
-  // }
-
-  // function sortingDriverData() {
-  //   console.log("CurrentTrip sortingDriverData", driverUserDistance)
-
-  //   //sorting by distanceFromUser
-  //   //any sorting method
-
-  //   setSortedDriverUserDistance()
-  //   dispatch(updateDriverUserDistance(sortedDriverUserDistance))
-
-  //   requstATrip()
-  // }
-
-  function distanceCalculation(lat1, lat2, lon1, lon2) {
-    var R = 6371; // Radius of the earth in km
-    var dLat = deg2rad(lat2 - lat1);  // deg2rad below
-    var dLon = deg2rad(lon2 - lon1);
-    var a =
-      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
-      Math.sin(dLon / 2) * Math.sin(dLon / 2)
-      ;
-    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    var d = R * c; // Distance in km
-    return d;
-  }
-  function deg2rad(deg) {
-    return deg * (Math.PI / 180)
+  if (location) {
+    initialLongitude = location.longitude
+    initialLatitude = location.latitude
+    // console.log(selectedLongitude, ",", selectedLatitude)
   }
 
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Text>Searching for drivers near you</Text>
+
+
+
+
+      <MapView
+        region={{
+          latitude: initialLatitude || 24.9331712,
+          longitude: initialLongitude || 67.0892032,
+          latitudeDelta: 0.0022,
+          longitudeDelta: 0.0021
+        }}
+        style={styles.map}>
+
+        <Marker
+          coordinate={{
+            latitude: initialLatitude || 24.9331712,
+            longitude: initialLongitude || 67.0892032,
+          }}
+          title={'Your Here'}
+        />
+
+      </ MapView>
+
+
+
+
+
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  map: {
+    width: Dimensions.get('window').width,
+    height: Dimensions.get('window').height * 0.8,
+  },
+});
 
 export default CurrentTrip

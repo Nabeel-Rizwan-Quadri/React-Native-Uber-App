@@ -25,7 +25,7 @@ function Login({ navigation }) {
 
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Text style={{fontSize: 25}}>Login Here</Text>
+      <Text style={{fontSize: 25}}>Drivers Login Here</Text>
 
       <TextInput style={{width: '100%'}} label="Email" onChangeText={(text) => onChangeValues('email', text)} type="email" placeholder='Email' ></TextInput>
       <TextInput style={{width: '100%'}} label="Password" secureTextEntry
